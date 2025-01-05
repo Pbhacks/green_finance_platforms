@@ -12,19 +12,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, dynamic>> _projects = [];
-
-  void _addProject(String name, double budget) {
-    setState(() {
-      _projects.add({'name': name, 'budget': budget});
-    });
-  }
-
   void _openAddProjectForm() {
     showDialog(
       context: context,
       builder: (context) {
-        return AddProjectForm(onAddProject: _addProject);
+        return const AddProjectForm();
       },
     );
   }
