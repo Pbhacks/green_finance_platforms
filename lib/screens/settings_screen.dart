@@ -21,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
               child: ListTile(
                 title: const Text('Dark Mode'),
                 trailing: AnimatedSwitcher(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   transitionBuilder: (child, animation) => ScaleTransition(
                     scale: animation,
                     child: child,
@@ -35,10 +35,10 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Card(
+            const Card(
               child: ListTile(
-                title: const Text('App Version'),
-                trailing: const Text('1.0.0'),
+                title: Text('App Version'),
+                trailing: Text('1.0.0'),
               ),
             ),
           ],

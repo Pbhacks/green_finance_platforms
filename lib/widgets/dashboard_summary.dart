@@ -21,7 +21,7 @@ class DashboardSummary extends StatelessWidget {
       childAspectRatio: isWeb ? 1.8 : 1.5,
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildAnimatedCard(
           'Total Budget',
@@ -54,7 +54,7 @@ class DashboardSummary extends StatelessWidget {
         
         return TweenAnimationBuilder(
           tween: Tween<double>(begin: 0, end: 1),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           builder: (context, double value, child) {
             return Transform.scale(
               scale: value,
@@ -107,7 +107,7 @@ class DashboardSummary extends StatelessWidget {
                       ),
                     ] : null,
                   ),
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                 ),
                 AnimatedText(
                   value,
@@ -120,7 +120,7 @@ class DashboardSummary extends StatelessWidget {
                       ),
                     ] : null,
                   ),
-                  duration: Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 400),
                 ),
               ],
             ),
