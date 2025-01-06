@@ -7,6 +7,7 @@ import 'package:green_finance_platform/providers/theme_provider.dart';
 import 'package:green_finance_platform/screens/home_screen.dart';
 import 'package:green_finance_platform/theme/app_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'screens/esg_dashboard_screen.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -52,6 +53,7 @@ class MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const AnalyticsScreen(),
+    ESGDashboardScreen(), // Added ESGDashboardScreen
     const SettingsScreen(),
   ];
 
@@ -74,6 +76,10 @@ class MainScreenState extends State<MainScreen> {
           NavigationDestination(
             icon: Icon(Icons.analytics),
             label: 'Analytics',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.dashboard),
+            label: 'ESG Dashboard', // Added ESG Dashboard label
           ),
           NavigationDestination(
             icon: Icon(Icons.settings),

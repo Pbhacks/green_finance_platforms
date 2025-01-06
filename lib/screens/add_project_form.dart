@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/project_provider.dart';
+import '../models/project.dart';
 
 class AddProjectForm extends StatefulWidget {
-  final Function(String, double) onAddProject;
-
-  const AddProjectForm({required this.onAddProject, Key? key})
-      : super(key: key);
+  const AddProjectForm({Key? key}) : super(key: key);
 
   @override
   _AddProjectFormState createState() => _AddProjectFormState();
@@ -26,7 +26,17 @@ class _AddProjectFormState extends State<AddProjectForm> {
     if (_formKey.currentState!.validate()) {
       final name = _nameController.text;
       final budget = double.tryParse(_budgetController.text) ?? 0.0;
-      widget.onAddProject(name, budget);
+      final project = Project(
+        id: DateTime.now().toString(),
+        name: name,
+        budget: budget,
+        esgScore: 0.0, // Default value, update as needed
+        roi: 0.0, // Default value, update as needed
+        sustainabilityMetrics: {}, // Default value, update as needed
+        risks: [], // Default value, update as needed
+      );
+
+      Provider.of<ProjectProvider>(context, listen: false).addProject(project);
       Navigator.of(context).pop();
     }
   }
