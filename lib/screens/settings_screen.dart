@@ -20,9 +20,17 @@ class SettingsScreen extends StatelessWidget {
             Card(
               child: ListTile(
                 title: const Text('Dark Mode'),
-                trailing: Switch(
-                  value: themeProvider.isDarkMode,
-                  onChanged: (_) => themeProvider.toggleTheme(),
+                trailing: AnimatedSwitcher(
+                  duration: Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  ),
+                  child: Switch(
+                    key: ValueKey<bool>(themeProvider.isDarkMode),
+                    value: themeProvider.isDarkMode,
+                    onChanged: (_) => themeProvider.toggleTheme(),
+                  ),
                 ),
               ),
             ),

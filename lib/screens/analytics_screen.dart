@@ -8,6 +8,12 @@ class AnalyticsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, double> budgetData = {
+      "Renewables": 2.5,
+      "Infrastructure": 4.0,
+      "Research": 1.5,
+    };
+
     return Consumer<ProjectProvider>(
       builder: (context, projectProvider, child) {
         return SingleChildScrollView(
@@ -22,7 +28,12 @@ class AnalyticsScreen extends StatelessWidget {
               const SizedBox(height: 20),
               _buildEsgScoreChart(projectProvider),
               const SizedBox(height: 20),
-              _buildBudgetAllocationChart(projectProvider),
+              Text('Budget Allocation', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 300,
+                child: _buildBudgetPieChart(budgetData),
+              ),
             ],
           ),
         );
@@ -68,37 +79,28 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBudgetAllocationChart(ProjectProvider provider) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Budget Allocation',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 200,
-              child: PieChart(
-                PieChartData(
-                  sections: provider.projects
-                      .map((project) => PieChartSectionData(
-                            value: project.budget,
-                            title: '${project.name}\n\$${project.budget}M',
-                            color: Colors.primaries[
-                                provider.projects.indexOf(project) %
-                                    Colors.primaries.length],
-                          ))
-                      .toList(),
-                ),
-              ),
-            ),
-          ],
+  Widget _buildBudgetPieChart(Map<String, double> budgetData) {
+    final sections = budgetData.entries.map((entry) {
+      return PieChartSectionData(
+        value: entry.value,
+        title: '${entry.key}\n\$${entry.value.toStringAsFixed(2)}M',
+        radius: 50,
+        showTitle: true,
+      );
+    }).toList();
+
+    return PieChart(
+      PieChartData(
+        sections: sections,
+        centerSpaceRadius: 40,
+        sectionsSpace: 2,
+        borderData: FlBorderData(show: false),
+        pieTouchData: PieTouchData(
+          touchCallback: (event, response) { /* ...handle tap... */ },
         ),
       ),
+      swapAnimationCurve: Curves.easeInOut,
+      swapAnimationDuration: const Duration(milliseconds: 600),
     );
   }
 }
