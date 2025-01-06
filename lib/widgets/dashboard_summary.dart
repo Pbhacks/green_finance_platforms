@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../providers/project_provider.dart';
 import '../utils/responsive_utils.dart';
 import '../theme/typography.dart';

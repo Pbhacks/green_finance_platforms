@@ -39,6 +39,11 @@ class ProjectProvider with ChangeNotifier {
     }
   }
 
+  void deleteProject(String id) {
+    _projects.removeWhere((project) => project.id == id);
+    notifyListeners();
+  }
+
   List<Project> getOptimizedPortfolio(double maxBudget) {
     // Simple greedy algorithm for portfolio optimization
     // In a real application, this would use more sophisticated methods
@@ -72,5 +77,12 @@ class ProjectProvider with ChangeNotifier {
       _projects = projectsList.map((json) => Project.fromJson(json)).toList();
       notifyListeners();
     }
+  }
+
+  Future<void> clearAllProjects() async {
+    _projects.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('projects');
+    notifyListeners();
   }
 }

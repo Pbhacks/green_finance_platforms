@@ -81,7 +81,7 @@ class MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const AnalyticsScreen(),
-    ESGDashboardScreen(), // Added ESGDashboardScreen
+    const ESGDashboardScreen(), // Added ESGDashboardScreen
     const SettingsScreen(),
   ];
 
