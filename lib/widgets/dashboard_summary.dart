@@ -14,7 +14,7 @@ class DashboardSummary extends StatelessWidget {
     final projectProvider = Provider.of<ProjectProvider>(context);
     final isWeb = ResponsiveUtils.isWeb(context);
     final crossAxisCount = isWeb ? 3 : 2;
-    
+
     return GridView.count(
       shrinkWrap: true,
       crossAxisCount: crossAxisCount,
@@ -45,13 +45,14 @@ class DashboardSummary extends StatelessWidget {
     );
   }
 
-  Widget _buildAnimatedCard(String title, String value, IconData icon, Color color) {
+  Widget _buildAnimatedCard(
+      String title, String value, IconData icon, Color color) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWeb = ResponsiveUtils.isWeb(context);
         final iconSize = isWeb ? 32.0 : 24.0;
         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-        
+
         return TweenAnimationBuilder(
           tween: Tween<double>(begin: 0, end: 1),
           duration: const Duration(milliseconds: 500),
@@ -60,7 +61,8 @@ class DashboardSummary extends StatelessWidget {
               scale: value,
               child: Card(
                 elevation: isDarkMode ? 8 : 2,
-                shadowColor: isDarkMode ? color.withOpacity(0.5) : Colors.black12,
+                shadowColor:
+                    isDarkMode ? color.withOpacity(0.5) : Colors.black12,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
@@ -72,13 +74,15 @@ class DashboardSummary extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    boxShadow: isDarkMode ? [
-                      BoxShadow(
-                        color: color.withOpacity(0.2),
-                        blurRadius: 15,
-                        spreadRadius: -8,
-                      ),
-                    ] : [],
+                    boxShadow: isDarkMode
+                        ? [
+                            BoxShadow(
+                              color: color.withOpacity(0.2),
+                              blurRadius: 15,
+                              spreadRadius: -8,
+                            ),
+                          ]
+                        : [],
                   ),
                   child: child,
                 ),
@@ -91,7 +95,8 @@ class DashboardSummary extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, 
+                Icon(
+                  icon,
                   size: iconSize,
                   color: isDarkMode ? Colors.white70 : Colors.black87,
                 ),
@@ -100,12 +105,14 @@ class DashboardSummary extends StatelessWidget {
                   title,
                   style: AppTypography.labelLarge.copyWith(
                     color: isDarkMode ? Colors.white70 : Colors.black87,
-                    shadows: isDarkMode ? [
-                      Shadow(
-                        color: color.withOpacity(0.5),
-                        blurRadius: 8,
-                      ),
-                    ] : null,
+                    shadows: isDarkMode
+                        ? [
+                            Shadow(
+                              color: color.withOpacity(0.5),
+                              blurRadius: 8,
+                            ),
+                          ]
+                        : null,
                   ),
                   duration: const Duration(milliseconds: 300),
                 ),
@@ -113,12 +120,14 @@ class DashboardSummary extends StatelessWidget {
                   value,
                   style: AppTypography.displayMedium.copyWith(
                     color: isDarkMode ? Colors.white : Colors.black87,
-                    shadows: isDarkMode ? [
-                      Shadow(
-                        color: color.withOpacity(0.5),
-                        blurRadius: 12,
-                      ),
-                    ] : null,
+                    shadows: isDarkMode
+                        ? [
+                            Shadow(
+                              color: color.withOpacity(0.5),
+                              blurRadius: 12,
+                            ),
+                          ]
+                        : null,
                   ),
                   duration: const Duration(milliseconds: 400),
                 ),
