@@ -10,6 +10,10 @@ class AppTheme {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
+    iconTheme: const IconThemeData(
+      color: Colors.black54,
+      size: 20,
+    ),
   );
 
   static ThemeData darkTheme = ThemeData(
