@@ -1,74 +1,70 @@
 class RiskAnalyzer {
-  static List<String> analyzeProjectRisks({
-    required Map<String, double> financialMetrics,
-    required Map<String, double> environmentalMetrics,
-    required Map<String, double> marketConditions,
+  static Map<String, dynamic> analyzeProjectRisk({
+    required double esgScore,
+    required double investment,
+    required Map<String, double> sustainabilityMetrics,
   }) {
     List<String> risks = [];
-    
-    // Analyze financial risks
-    risks.addAll(_analyzeFinancialRisks(financialMetrics));
-    
-    // Analyze environmental risks
-    risks.addAll(_analyzeEnvironmentalRisks(environmentalMetrics));
-    
-    // Analyze market risks
-    risks.addAll(_analyzeMarketRisks(marketConditions));
-    
-    return risks;
+    String riskLevel;
+    double roi;
+
+    // ESG Score based risk
+    if (esgScore < 50) {
+      risks.add('Low ESG Performance');
+      riskLevel = 'High';
+    } else {
+      riskLevel = 'Low';
+    }
+
+    // Calculate ROI based on sustainability metrics and ESG score
+    roi = _calculateROI(sustainabilityMetrics, esgScore, investment);
+
+    // Additional risk factors
+    if (sustainabilityMetrics['co2Reduction']! < 100) {
+      risks.add('Low Carbon Reduction Impact');
+    }
+
+    if (sustainabilityMetrics['energySavings']! < 1000) {
+      risks.add('Minimal Energy Savings');
+    }
+
+    if (sustainabilityMetrics['jobCreation']! < 50) {
+      risks.add('Limited Social Impact');
+    }
+
+    if (sustainabilityMetrics['governanceScore']! < 5) {
+      risks.add('Poor Governance Standards');
+    }
+
+    return {
+      'riskLevel': riskLevel,
+      'risks': risks,
+      'roi': roi,
+    };
   }
 
-  static List<String> _analyzeFinancialRisks(Map<String, double> metrics) {
-    List<String> risks = [];
-    
-    if (metrics['debtRatio'] != null && metrics['debtRatio']! > 0.7) {
-      risks.add('High Debt Exposure');
-    }
-    
-    if (metrics['liquidityRatio'] != null && metrics['liquidityRatio']! < 1.2) {
-      risks.add('Low Liquidity');
-    }
-    
-    if (metrics['roi'] != null && metrics['roi']! < 0.1) {
-      risks.add('Low ROI');
-    }
-    
-    return risks;
-  }
+  static double _calculateROI(
+    Map<String, double> metrics,
+    double esgScore,
+    double investment,
+  ) {
+    // Base ROI calculation
+    double baseRoi = 15.0; // 15% base ROI
 
-  static List<String> _analyzeEnvironmentalRisks(Map<String, double> metrics) {
-    List<String> risks = [];
-    
-    if (metrics['carbonEmissions'] != null && metrics['carbonEmissions']! > 500) {
-      risks.add('High Carbon Emissions');
-    }
-    
-    if (metrics['resourceDepletion'] != null && metrics['resourceDepletion']! > 0.6) {
-      risks.add('Resource Depletion Risk');
-    }
-    
-    if (metrics['climateRisk'] != null && metrics['climateRisk']! > 0.7) {
-      risks.add('High Climate Risk');
-    }
-    
-    return risks;
-  }
+    // Adjust ROI based on ESG score
+    double esgMultiplier = esgScore / 50.0; // 1.0 is neutral point
 
-  static List<String> _analyzeMarketRisks(Map<String, double> conditions) {
-    List<String> risks = [];
-    
-    if (conditions['marketVolatility'] != null && conditions['marketVolatility']! > 0.5) {
-      risks.add('High Market Volatility');
-    }
-    
-    if (conditions['competitionLevel'] != null && conditions['competitionLevel']! > 0.8) {
-      risks.add('High Competition');
-    }
-    
-    if (conditions['regulatoryRisk'] != null && conditions['regulatoryRisk']! > 0.6) {
-      risks.add('Regulatory Risk');
-    }
-    
-    return risks;
+    // Adjust ROI based on sustainability metrics
+    double sustainabilityBonus = 0.0;
+    sustainabilityBonus += (metrics['co2Reduction']! / 1000) * 2; // Up to 2%
+    sustainabilityBonus += (metrics['energySavings']! / 10000) * 3; // Up to 3%
+    sustainabilityBonus += (metrics['socialImpact']! / 10) * 2; // Up to 2%
+    sustainabilityBonus += (metrics['governanceScore']! / 10) * 3; // Up to 3%
+
+    // Calculate final ROI
+    double finalRoi = (baseRoi * esgMultiplier) + sustainabilityBonus;
+
+    // Cap ROI between 5% and 30%
+    return finalRoi.clamp(5.0, 30.0);
   }
 }
