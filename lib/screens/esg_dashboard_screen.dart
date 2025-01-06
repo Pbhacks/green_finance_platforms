@@ -14,6 +14,7 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
   List<ESGIndicator> _indicators = [];
   bool _isLoading = false;
   String _selectedCountry = 'USA';
+  bool _dataVisible = false; // New state flag
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
         setState(() {
           _esgData = data;
           _isLoading = false;
+          _dataVisible = true; // Show data after load
         });
       } else {
         print('No indicators available');
@@ -67,18 +69,22 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : _esgData == null || _esgData!.isEmpty
-              ? Center(child: Text('No data available'))
-              : SingleChildScrollView(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _buildCountrySelector(),
-                      SizedBox(height: 16),
-                      ..._buildIndicatorCards(),
-                    ],
-                  ),
-                ),
+          : AnimatedOpacity(
+              opacity: _dataVisible ? 1.0 : 0.0,
+              duration: Duration(milliseconds: 500),
+              child: _esgData == null || _esgData!.isEmpty
+                  ? Center(child: Text('No data available'))
+                  : SingleChildScrollView(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          _buildCountrySelector(),
+                          SizedBox(height: 24), // Increased spacing
+                          ..._buildIndicatorCards(),
+                        ],
+                      ),
+                    ),
+            ),
     );
   }
 
@@ -105,9 +111,9 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
       final data = _esgData?[indicator.id] ?? [];
 
       return Card(
-        margin: EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: 24), // Increased spacing
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(24), // Increased padding
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -115,13 +121,14 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
                 indicator.name,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
+              SizedBox(height: 8), // Added spacing
               Text(
                 indicator.description,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 16), // Increased spacing
               SizedBox(
-                height: 200,
+                height: 250, // Increased height
                 child: data.isEmpty
                     ? Center(child: Text('No data available'))
                     : _buildChart(data),
@@ -134,42 +141,43 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
   }
 
   Widget _buildChart(List<ESGDataPoint> data) {
+    if (data.isEmpty) {
+      return const Center(child: Text('No data available'));
+    }
+
     final spots = data
-        .where((point) => point.value != null && point.value! > 0)
-        .map((point) => FlSpot(
-              double.parse(point.year),
-              point.value!,
+        .where((point) => point.year != null && point.value != null)
+        .map((p) => FlSpot(
+              double.parse(p.year.toString()),
+              p.value!,
             ))
         .toList();
 
-    if (spots.isEmpty) {
-      return Center(child: Text('No valid data points'));
-    }
-
     return LineChart(
       LineChartData(
-        gridData: FlGridData(show: true),
-        titlesData: FlTitlesData(
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                return Text(value.toInt().toString());
-              },
-            ),
+        lineTouchData: LineTouchData(
+          enabled: true,
+          touchTooltipData: LineTouchTooltipData(
+            // ...existing tooltip config...
           ),
         ),
-        borderData: FlBorderData(show: true),
+        minX: spots.first.x,
+        maxX: spots.last.x,
+        // ...existing axis titles/ticks...
         lineBarsData: [
           LineChartBarData(
             spots: spots,
-            isCurved: true,
-            color: Colors.blue,
+            isCurved: true, // increases line fluidity
+            color: Colors.green,
+            barWidth: 3,
             dotData: FlDotData(show: true),
+            belowBarData: BarAreaData(
+              show: true,
+              color: Colors.green.withOpacity(0.2),
+            ),
           ),
         ],
+        // ...additional spacing & grid config...
       ),
     );
   }
