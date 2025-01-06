@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                 ),
               ),
-              appBarTheme: AppBarTheme(
+              appBarTheme: const AppBarTheme(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(
@@ -109,7 +109,7 @@ class MainScreenState extends State<MainScreen> {
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
-              offset: Offset(0, 5),
+              offset: const Offset(0, 5),
             ),
           ],
         ),

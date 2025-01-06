@@ -33,7 +33,7 @@ class ESGService {
 
   Future<List<ESGIndicator>> fetchAvailableIndicators() async {
     try {
-      final url = '$baseUrl/indicators?format=json&per_page=500';
+      const url = '$baseUrl/indicators?format=json&per_page=500';
       print('Fetching indicators from: $url');
 
       final response = await http.get(Uri.parse(url));
@@ -61,8 +61,9 @@ class ESGService {
           }).toList();
 
           print('Found ${_availableIndicators.length} relevant indicators');
-          _availableIndicators
-              .forEach((ind) => print('Indicator: ${ind.toString()}'));
+          for (var ind in _availableIndicators) {
+            print('Indicator: ${ind.toString()}');
+          }
 
           return _availableIndicators;
         }

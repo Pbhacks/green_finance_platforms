@@ -85,13 +85,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ];
         },
         body: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: AnimateList(
-                interval: Duration(milliseconds: 100),
-                effects: [FadeEffect(duration: Duration(milliseconds: 500))],
+                interval: const Duration(milliseconds: 100),
+                effects: [const FadeEffect(duration: Duration(milliseconds: 500))],
                 children: const [
                   DashboardSummary(),
                   SizedBox(height: 20),
@@ -111,10 +111,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             offset: Offset(0, 10 * sin(_controller.value * 2 * pi)),
             child: FloatingActionButton(
               onPressed: _openAddProjectForm,
-              child: const Icon(Icons.add),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
+              child: const Icon(Icons.add),
             ),
           );
         },
