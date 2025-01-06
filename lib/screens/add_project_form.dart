@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/project_provider.dart';
 import '../models/project.dart';
 import '../utils/esg_calculator.dart';
+import '../utils/risk_analyzer.dart';
 
 class AddProjectForm extends StatefulWidget {
   const AddProjectForm({Key? key}) : super(key: key);
@@ -58,25 +59,47 @@ class _AddProjectFormState extends State<AddProjectForm> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final esgScore = _calculateEsgScore();
+      
+      final sustainabilityMetrics = {
+        'co2Reduction': double.tryParse(_co2Controller.text) ?? 0,
+        'energySavings': double.tryParse(_energyController.text) ?? 0,
+        'socialImpact': double.tryParse(_socialImpactController.text) ?? 0,
+        'governanceScore': double.tryParse(_governanceController.text) ?? 0,
+        'jobCreation': double.tryParse(_jobsController.text) ?? 0,
+      };
+
+      final investment = double.tryParse(_investmentController.text) ?? 0;
+      
+      // Analyze risks and get ROI
+      final analysis = RiskAnalyzer.analyzeProjectRisk(
+        esgScore: esgScore,
+        investment: investment,
+        sustainabilityMetrics: sustainabilityMetrics,
+      );
+
       final project = Project(
         id: DateTime.now().toString(),
         name: _nameController.text,
-        budget: double.tryParse(_investmentController.text) ?? 0,
+        budget: investment,
         esgScore: esgScore,
-        sustainabilityMetrics: {
-          'co2Reduction': double.tryParse(_co2Controller.text) ?? 0,
-          'energySavings': double.tryParse(_energyController.text) ?? 0,
-          'socialImpact': double.tryParse(_socialImpactController.text) ?? 0,
-          'governanceScore': double.tryParse(_governanceController.text) ?? 0,
-          'jobCreation': double.tryParse(_jobsController.text) ?? 0,
-        },
-        roi: 0.0,
-        risks: [],
+        sustainabilityMetrics: sustainabilityMetrics,
+        roi: analysis['roi'],
+        risks: analysis['risks'],
       );
 
       Provider.of<ProjectProvider>(context, listen: false).addProject(project);
       Navigator.of(context).pop();
     }
+  }
+
+  void _clearForm() {
+    _nameController.clear();
+    _co2Controller.clear();
+    _energyController.clear();
+    _socialImpactController.clear();
+    _governanceController.clear();
+    _jobsController.clear();
+    _investmentController.clear();
   }
 
   Widget _buildTextField({
@@ -172,6 +195,11 @@ class _AddProjectFormState extends State<AddProjectForm> {
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: _clearForm,
+                    child: const Text('Clear'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
