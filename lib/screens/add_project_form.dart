@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/project_provider.dart';
 import '../models/project.dart';
+import '../utils/esg_calculator.dart';
 
 class AddProjectForm extends StatefulWidget {
   const AddProjectForm({Key? key}) : super(key: key);
@@ -13,25 +14,64 @@ class AddProjectForm extends StatefulWidget {
 class _AddProjectFormState extends State<AddProjectForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  double _budgetValue = 0.0; // For slider state
+  final _co2Controller = TextEditingController();
+  final _energyController = TextEditingController();
+  final _socialImpactController = TextEditingController();
+  final _governanceController = TextEditingController();
+  final _jobsController = TextEditingController();
+  final _investmentController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
+    _co2Controller.dispose();
+    _energyController.dispose();
+    _socialImpactController.dispose();
+    _governanceController.dispose();
+    _jobsController.dispose();
+    _investmentController.dispose();
     super.dispose();
+  }
+
+  double _calculateEsgScore() {
+    final environmentalMetrics = {
+      'carbonEmissions': -(double.tryParse(_co2Controller.text) ?? 0),
+      'renewableEnergy': double.tryParse(_energyController.text) ?? 0,
+    };
+
+    final socialMetrics = {
+      'communityImpact': double.tryParse(_socialImpactController.text) ?? 0,
+      'laborPractices': double.tryParse(_jobsController.text) ?? 0,
+    };
+
+    final governanceMetrics = {
+      'transparency': double.tryParse(_governanceController.text) ?? 0,
+    };
+
+    return EsgCalculator.calculateEsgScore(
+      environmentalMetrics: environmentalMetrics,
+      socialMetrics: socialMetrics,
+      governanceMetrics: governanceMetrics,
+    );
   }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      final name = _nameController.text;
+      final esgScore = _calculateEsgScore();
       final project = Project(
         id: DateTime.now().toString(),
-        name: name,
-        budget: _budgetValue, // Use slider value
-        esgScore: 0.0, // Default value, update as needed
-        roi: 0.0, // Default value, update as needed
-        sustainabilityMetrics: {}, // Default value, update as needed
-        risks: [], // Default value, update as needed
+        name: _nameController.text,
+        budget: double.tryParse(_investmentController.text) ?? 0,
+        esgScore: esgScore,
+        sustainabilityMetrics: {
+          'co2Reduction': double.tryParse(_co2Controller.text) ?? 0,
+          'energySavings': double.tryParse(_energyController.text) ?? 0,
+          'socialImpact': double.tryParse(_socialImpactController.text) ?? 0,
+          'governanceScore': double.tryParse(_governanceController.text) ?? 0,
+          'jobCreation': double.tryParse(_jobsController.text) ?? 0,
+        },
+        roi: 0.0,
+        risks: [],
       );
 
       Provider.of<ProjectProvider>(context, listen: false).addProject(project);
@@ -39,52 +79,111 @@ class _AddProjectFormState extends State<AddProjectForm> {
     }
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    String? suffix,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          suffixText: suffix,
+          border: const OutlineInputBorder(),
+        ),
+        keyboardType: TextInputType.number,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter a value';
+          }
+          if (double.tryParse(value) == null) {
+            return 'Please enter a valid number';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Add New Project'),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Project Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a project name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 12),
-            Text('Budget: \$${_budgetValue.toStringAsFixed(2)}'),
-            Slider(
-              value: _budgetValue,
-              min: 0,
-              max: 10, // up to 10M, adjust as needed
-              divisions: 100,
-              label: '\$${_budgetValue.toStringAsFixed(2)}M',
-              onChanged: (value) {
-                setState(() {
-                  _budgetValue = value;
-                });
-              },
-            ),
-          ],
+    return Dialog(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Add New Project',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Project Name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+              ),
+              _buildTextField(
+                controller: _co2Controller,
+                label: 'CO2 Reduction',
+                hint: 'Enter CO2 reduction target',
+                suffix: 'tons',
+              ),
+              _buildTextField(
+                controller: _energyController,
+                label: 'Energy Savings',
+                hint: 'Enter energy savings target',
+                suffix: 'kWh',
+              ),
+              _buildTextField(
+                controller: _socialImpactController,
+                label: 'Social Impact Score',
+                hint: 'Rate from 1-10',
+              ),
+              _buildTextField(
+                controller: _governanceController,
+                label: 'Governance Score',
+                hint: 'Rate from 1-10',
+              ),
+              _buildTextField(
+                controller: _jobsController,
+                label: 'Job Creation',
+                hint: 'Expected new jobs',
+              ),
+              _buildTextField(
+                controller: _investmentController,
+                label: 'Investment',
+                hint: 'Investment amount',
+                suffix: 'M',
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _submitForm,
+                    child: const Text('Add Project'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: _submitForm,
-          child: const Text('Add'),
-        ),
-      ],
     );
   }
 }
