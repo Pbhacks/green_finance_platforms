@@ -4,6 +4,8 @@ import '../services/esg_service.dart';
 import '../models/esg_data_point.dart';
 
 class ESGDashboardScreen extends StatefulWidget {
+  const ESGDashboardScreen({super.key});
+
   @override
   _ESGDashboardScreenState createState() => _ESGDashboardScreenState();
 }
@@ -50,7 +52,7 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
       print('Error in ESG Dashboard: $e');
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load ESG data')),
+        const SnackBar(content: Text('Failed to load ESG data')),
       );
     }
   }
@@ -59,27 +61,27 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ESG Dashboard'),
+        title: const Text('ESG Dashboard'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _initializeData,
           ),
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : AnimatedOpacity(
               opacity: _dataVisible ? 1.0 : 0.0,
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
               child: _esgData == null || _esgData!.isEmpty
-                  ? Center(child: Text('No data available'))
+                  ? const Center(child: Text('No data available'))
                   : SingleChildScrollView(
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
                           _buildCountrySelector(),
-                          SizedBox(height: 24), // Increased spacing
+                          const SizedBox(height: 24), // Increased spacing
                           ..._buildIndicatorCards(),
                         ],
                       ),
@@ -111,9 +113,9 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
       final data = _esgData?[indicator.id] ?? [];
 
       return Card(
-        margin: EdgeInsets.only(bottom: 24), // Increased spacing
+        margin: const EdgeInsets.only(bottom: 24), // Increased spacing
         child: Padding(
-          padding: EdgeInsets.all(24), // Increased padding
+          padding: const EdgeInsets.all(24), // Increased padding
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -121,16 +123,16 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
                 indicator.name,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              SizedBox(height: 8), // Added spacing
+              const SizedBox(height: 8), // Added spacing
               Text(
                 indicator.description,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              SizedBox(height: 16), // Increased spacing
+              const SizedBox(height: 16), // Increased spacing
               SizedBox(
                 height: 250, // Increased height
                 child: data.isEmpty
-                    ? Center(child: Text('No data available'))
+                    ? const Center(child: Text('No data available'))
                     : _buildChart(data),
               ),
             ],
@@ -146,7 +148,7 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
     }
 
     final spots = data
-        .where((point) => point.year != null && point.value != null)
+        .where((point) => point.value != null)
         .map((p) => FlSpot(
               double.parse(p.year.toString()),
               p.value!,
@@ -155,7 +157,7 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
 
     return LineChart(
       LineChartData(
-        lineTouchData: LineTouchData(
+        lineTouchData: const LineTouchData(
           enabled: true,
           touchTooltipData: LineTouchTooltipData(
             // ...existing tooltip config...
@@ -170,7 +172,7 @@ class _ESGDashboardScreenState extends State<ESGDashboardScreen> {
             isCurved: true, // increases line fluidity
             color: Colors.green,
             barWidth: 3,
-            dotData: FlDotData(show: true),
+            dotData: const FlDotData(show: true),
             belowBarData: BarAreaData(
               show: true,
               color: Colors.green.withOpacity(0.2),
